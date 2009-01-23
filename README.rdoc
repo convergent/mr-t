@@ -7,27 +7,32 @@ This one is for views and controllers.
 
 The features until now:
 
-* translate in the scope of the view or controller, with proper fallback
-* write missing keys to a yml file.
-* a complete list of which keys get added to your log, so you can easily check which fallbacks you could use.
-* a rake task to combine all translations in a file per locale
+* Translate in the scope of the view or controller, with proper fallback.
+* Write missing keys to a yml file.
+* A complete list of which keys get added to your log, so you can easily check which fallbacks you could use.
+* A rake task to combine all translations in a file per locale.
+* A rake task to compare translations and register missing keys among all available locales.
 
 Planned features:
 
-* A rake task to compare translations.
-* Maybe add google translate service, like amatsuda's i18n_generators
+* Maybe add google translate service, like amatsuda's i18n_generators.
+* Add automatic scoping for ActiveRecord. Calling t(:something) might presume it's a human_attribute_name.
+* Add writing missing translation data to all calls to I18n#t.
+* A way to ask Mr T to have pity on you and configure it to your liking.
 
 === Installation
 
-This plugin is built for Rails 2.2.2 and up. It requires the ya2yaml gem to work with UTF8 properly.
+This plugin is built for Rails 2.2.2 and greater. Mr T should be indifferent to which backend you use.
+Installation is straight forward enough:
 
   ./script/plugin install git://github.com/iain/mr.-t.git
 
-Installing ya2yaml, add this to your <tt>config/environment.rb</tt>
+You need to install ya2yaml if you want to be UTF8-safe.
+To install, add this to your <tt>config/environment.rb</tt>:
 
   config.gem "ya2yaml"
 
-And run, which one you prefer:
+And run one or both:
 
   rake gems:install
   rake gems:unpack
@@ -71,6 +76,16 @@ When you provide the proper translations in your missing locale files, you can a
   rake i18n:combine
 
 This will include all translations per locale, even the ones Rails provides and put them in their proper locale file. Old locale files will be renamed to <tt>oldfile.yml.bak</tt> where <tt>oldfile</tt> is of course the name it used to have.
+
+To quickly make sure that every available language has all missing locales, run:
+
+  rake i18n:compare
+
+This will write all missing translation keys to <tt>missing_en.yml</tt> (depending on the locale it's missing from).
+
+==== Notice
+
+The code is still rather scatchy and needs to be refactored and tested. Some work still needs to be done. Any suggestions and additions is of course very welcome.
 
 ---
 

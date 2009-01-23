@@ -7,23 +7,25 @@ module MrT
       logger.debug "Mr. T says (from #{trace}): #{defaults.inspect}"
     end
 
-    def write_missing_yaml(key, value = nil)
-      filename = "#{RAILS_ROOT}/config/locales/missing_#{I18n.locale}.yml"
+    def write_missing_yaml(key, value = nil, locale = nil, comment = nil)
+      comment ||= "Automatically generated from missing translation data"
+      locale ||= I18n.locale
+      filename = "#{RAILS_ROOT}/config/locales/missing_#{locale}.yml"
+      value ||= key.split('.').last
+      #value = google_translate(I18n.locale, value)
       translations = File.exist?(filename) ? YAML::load(IO.read(filename)) : nil
       translations ||= {}
-      translations.deep_merge!(I18n.locale.to_s => key_to_hash(key.to_s, value))
-      write_yaml(filename, translations, "Automatically generated from missing files")
+      translations.deep_merge!(locale.to_s => key_to_hash(key.to_s, value))
+      write_yaml(filename, translations, comment)
     end
 
     def write_yaml(filename, translations, comment = "Mr. T has written a file for you!")
+      action = File.exist?(filename) ? "Updated" : "Created"
       File.open(filename, 'w') do |f|
-        f.write(
-          translations.
-          ya2yaml.
-          gsub("!ruby/symbol ", ":").
-          sub("---", "# #{comment}\n# Last updated: #{Time.now}\n")
-        )
+        f.write(yaml(translations).sub("---", "# #{comment}\n# Last updated: #{Time.now}\n"))
       end
+      msg = "#{action} locale file: #{File.expand_path(filename)}"
+      defined?(logger) ? logger.debug(msg) : puts(msg)
     end
 
     def key_to_hash(key, value = nil)
@@ -69,6 +71,61 @@ module MrT
         i += 1
         yield it, i
       end
+    end
+    
+    def yaml(value)
+      if value.respond_to?(:yayaml)
+        value.ya2yaml.gsub("!ruby/symbol ", ":")
+      else
+        value.to_yaml
+      end
+    end
+
+    # Got this from amatsuda's i18n_generators
+    # http://github.com/amatsuda/i18n_generators
+    def google_translate(locale, word)
+      @@cache ||= {}
+      return @@cache[word] if @@cache[word]
+      begin
+        w = CGI.escape ActiveSupport::Inflector.humanize(word)
+        uri = "http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q=#{w}&langpair=en%7C#{locale}"
+        logger.debug uri
+        json = OpenURI.open_uri(uri).read
+        result = ActiveSupport::JSON.decode(json)
+        result['responseStatus'] == 200 ? (@@cache[word] = result['responseData']['translatedText']) : word
+      rescue => e
+        logger.debug %Q[failed to translate "#{word}" into "#{locale}" language.]
+        word
+      end
+    end
+
+    def all_translations
+      translations = I18n.load_path.flatten.inject({}) do |t, file|
+        v = YAML::load(IO.read(file)) rescue {}
+        v = {} unless v.is_a?(Hash)
+        t.deep_merge!(v)
+      end
+    end
+
+    def deep_nillify(hash)
+      Hash[hash.collect do |key, value|
+        [key, (value.is_a?(Hash) && !value.blank? ? deep_nillify(value) : nil)]
+      end]
+    end
+
+    def deep_remove_not_nil(hash)
+      results = hash
+      if results.is_a?(Hash)
+        results = Hash[results.collect do |key, value|
+          [key, (value.is_a?(Hash) ? deep_remove_not_nil(value) : value)]
+        end]
+      end
+      if results.is_a?(Hash)
+        results = Hash[results.select do |key, value|
+          value != {} and (value.nil? or value.is_a?(Hash))
+        end]
+      end
+      results
     end
 
   end
