@@ -1,6 +1,6 @@
 == Mr. T
 
-<img src="http://iain.nl/BABaracus.jpg"/>
+http://iain.nl/BABaracus.jpg
 
 Another attempt at making calls to I18n#translate a bit simpler. 
 This one is for views and controllers.
