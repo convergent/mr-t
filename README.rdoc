@@ -10,10 +10,11 @@ The features until now:
   - translate in the scope of the view or controller, with proper fallback
   - write missing keys to a yml file.
   - a complete list of which keys get added to your log, so you can easily check which fallbacks you could use.
+  - a rake task to combine all translations in a file per locale
 
 Planned features:
 
-  - Add some rake tasks to manage your keys
+  - A rake task to compare translations.
   - Maybe add google translate service, like amatsuda's i18n_generators
 
 === Installation
@@ -32,6 +33,8 @@ And run, which one you prefer:
   rake gems:unpack
 
 === Usage
+
+==== Translating in views or controllers
 
 A normal case would be that the both the new- and the edit-action of a controller renders the form partial. Most of the names will be the same, but not always. Mr. T have his defaults in such a manner that you can easily manage this.
 
@@ -53,13 +56,22 @@ When working from the controller, it will be:
 
 Notice that any special characters from the key will be removed, when used as translation lookup key, but the original key will be defaulted to, and will be stored in the missing locale file.
 
-And finally it'll serve the original string as a default, but not without writing to config/locales/missing_en.yml (depending on your locale of course).
+And finally it'll serve the original string as a default, but not without writing to <tt>config/locales/missing_en.yml</tt> (depending on your locale of course).
 
 The log will display which fallbacks have been used, so you easily check out where you can place your translations.
 
   Mr. T says (from /app/views/posts/_form.html.haml:3): ["posts.new.shut_up_fool", "posts._form.shut_up_fool", "posts.__common.shut_up_fool", :shut_up_fool, "Shut up, fool!"]
 
 Notice: The t() method will be overridden by Mr. T, but the translate method doensn't. Use translate if you wish to use the old one.
+
+==== Rake tasks
+
+When you provide the proper translations in your missing locale files, you can add them to the combined locale files (en.yml nl.yml, de.yml, etc) using the rake task:
+
+  rake i18n:combine
+
+This will include all translations per locale, even the ones Rails provides and put them in their proper locale file. Old locale files will be renamed to <tt>oldfile.yml.bak</tt> where <tt>oldfile</tt> is of course the name it used to have.
+
 
 Expect some better documentation, and the possibility to configure Mr T a bit more, later on!
 
