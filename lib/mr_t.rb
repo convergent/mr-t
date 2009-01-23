@@ -136,12 +136,17 @@ module MrT
 
     def t(key, options = {})
       reraise = options[:raise]
-      defaults = translation_defaults(key, options[:default])
-      log_fallback(defaults)
-      default = defaults.pop
-      I18n.t(defaults.shift, options.merge(:default => defaults.collect(&:to_sym), :raise => true))
+      unless options[:default]
+        defaults = translation_defaults(key, options[:default])
+        log_fallback(defaults)
+        default = defaults.pop
+        key = defaults.shift
+        options[:default] = defaults.collect(&:to_sym)
+      end
+      I18n.t(key, options.merge(:raise => true))
     rescue I18n::MissingTranslationData => e
-      write_missing_yaml(defaults.first, default)
+      default = [options[:default]].flatten.last
+      write_missing_yaml(key, default)
       raise e if reraise
       default_html(default)
     end

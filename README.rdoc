@@ -67,7 +67,7 @@ The log will display which fallbacks have been used, so you easily check out whe
 
   Mr. T says (from /app/views/posts/_form.html.haml:3): ["posts.new.shut_up_fool", "posts._form.shut_up_fool", "posts.__common.shut_up_fool", :shut_up_fool, "Shut up, fool!"]
 
-Notice: The t() method will be overridden by Mr. T, but the translate method doensn't. Use translate if you wish to use the old one.
+Notice: The t() method will be overridden by Mr. T, but the translate method doensn't. Use translate if you wish to use the old behavior. Also, setting the default option, will disable Mr T's special abilities and perform a regular lookup, without complicated fallbacks.
 
 ==== Rake tasks
 
