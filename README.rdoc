@@ -7,19 +7,15 @@ This one is for views and controllers.
 
 The features until now:
 
-<ul>
-<li>translate in the scope of the view or controller, with proper fallback</li>
-<li>write missing keys to a yml file.</li>
-<li>a complete list of which keys get added to your log, so you can easily check which fallbacks you could use.</li>
-<li>a rake task to combine all translations in a file per locale</li>
-</ul>
+* translate in the scope of the view or controller, with proper fallback
+* write missing keys to a yml file.
+* a complete list of which keys get added to your log, so you can easily check which fallbacks you could use.
+* a rake task to combine all translations in a file per locale
 
 Planned features:
 
-<ul>
-<li>A rake task to compare translations.</li>
-<li>Maybe add google translate service, like amatsuda's i18n_generators</li>
-</ul>
+* A rake task to compare translations.
+* Maybe add google translate service, like amatsuda's i18n_generators
 
 === Installation
 
@@ -47,20 +43,16 @@ A normal case would be that the both the new- and the edit-action of a controlle
 
 will look up these keys:
 
-<ul>
-<li>posts.new.shut_up_fool # or posts.edit.save, depending on which action was run</li>
-<li>posts._form.shut_up_fool</li>
-<li>posts.__common.shut_up_fool</li>
-<li>shut_up_fool</li>
-</ul>
+* posts.new.shut_up_fool # or posts.edit.save, depending on which action was run
+* posts._form.shut_up_fool
+* posts.__common.shut_up_fool
+* shut_up_fool
 
 When working from the controller, it will be:
 
-<ul>
-<li>posts.new.shut_up_fool</li>
-<li>posts.__common.shut_up_fool</li>
-<li>shut_up_fool</li>
-</ul>
+* posts.new.shut_up_fool
+* posts.__common.shut_up_fool
+* shut_up_fool
 
 Notice that any special characters from the key will be removed, when used as translation lookup key, but the original key will be defaulted to, and will be stored in the missing locale file.
 
@@ -79,7 +71,6 @@ When you provide the proper translations in your missing locale files, you can a
   rake i18n:combine
 
 This will include all translations per locale, even the ones Rails provides and put them in their proper locale file. Old locale files will be renamed to <tt>oldfile.yml.bak</tt> where <tt>oldfile</tt> is of course the name it used to have.
-
 
 ---
 
