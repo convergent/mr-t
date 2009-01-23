@@ -1,2 +1,2 @@
-ActionController::Base.send(:include, MrT)
-ActionView::Base.send(:include, MrT)
+ActionController::Base.send(:include, MrT::Translate)
+ActionView::Base.send(:include, MrT::Translate)

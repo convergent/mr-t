@@ -1,44 +1,68 @@
 == Mr. T
 
-Another attempt at making calls to I18n#translate a bit simpler. This one is for views (for now), but might be updated soon:
+<img src="http://iain.nl/BABaracus.jpg"/>
 
-== I pitty the fool
+Another attempt at making calls to I18n#translate a bit simpler. 
+This one is for views and controllers.
+
+The features until now:
+
+  - translate in the scope of the view or controller, with proper fallback
+  - write missing keys to a yml file.
+  - a complete list of which keys get added to your log, so you can easily check which fallbacks you could use.
+
+Planned features:
+
+  - Add some rake tasks to manage your keys
+  - Maybe add google translate service, like amatsuda's i18n_generators
+
+=== Installation
+
+This plugin is built for Rails 2.2.2 and up. It requires the ya2yaml gem to work with UTF8 properly.
+
+  ./script/plugin install git://github.com/iain/mr.-t.git
+
+Installing ya2yaml, add this to your <tt>config/environment.rb</tt>
+
+  config.gem "ya2yaml"
+
+And run, which one you prefer:
+
+  rake gems:install
+  rake gems:unpack
+
+=== Usage
 
 A normal case would be that the both the new- and the edit-action of a controller renders the form partial. Most of the names will be the same, but not always. Mr. T have his defaults in such a manner that you can easily manage this.
 
   # app/views/posts/_form.html.erb
-  <%= t("Shut up, fool") %>
+  <%= t("Shut up, fool!") %>
 
 will look up these keys:
 
-# posts._form.shut_up_fool
-# posts.new.shut_up_fool (or posts.edit.save, depending on which action was run)
-# posts.__common.shut_up_fool
-# shut_up_fool
+  - posts.new.shut_up_fool # or posts.edit.save, depending on which action was run
+  - posts._form.shut_up_fool
+  - posts.__common.shut_up_fool
+  - shut_up_fool
 
-And finally it'll serve the original string as a default, but not without writing to config/locales/missing_en.yml.
+When working from the controller, it will be:
+
+  - posts.new.shut_up_fool
+  - posts.__common.shut_up_fool
+  - shut_up_fool
+
+Notice that any special characters from the key will be removed, when used as translation lookup key, but the original key will be defaulted to, and will be stored in the missing locale file.
+
+And finally it'll serve the original string as a default, but not without writing to config/locales/missing_en.yml (depending on your locale of course).
+
+The log will display which fallbacks have been used, so you easily check out where you can place your translations.
+
+  Mr. T says (from /app/views/posts/_form.html.haml:3): ["posts.new.shut_up_fool", "posts._form.shut_up_fool", "posts.__common.shut_up_fool", :shut_up_fool, "Shut up, fool!"]
+
+Notice: The t() method will be overridden by Mr. T, but the translate method doensn't. Use translate if you wish to use the old one.
 
 Expect some better documentation, and the possibility to configure Mr T a bit more, later on!
 
 ---
 
 Copyright (c) 2009 Iain Hecker, released under the MIT license
-
-  Permission is hereby granted, free of charge, to any person obtaining
-  a copy of this software and associated documentation files (the
-  "Software"), to deal in the Software without restriction, including
-  without limitation the rights to use, copy, modify, merge, publish,
-  distribute, sublicense, and/or sell copies of the Software, and to
-  permit persons to whom the Software is furnished to do so, subject to
-  the following conditions:
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
