@@ -163,7 +163,8 @@ module MrT
     end
 
     def default_html(value)
-      content_tag :span, value, :class => 'missing_translation_data'
+      #content_tag :span, value, :class => 'missing_translation_data'
+      value
     end
     
     def app_view_caller
